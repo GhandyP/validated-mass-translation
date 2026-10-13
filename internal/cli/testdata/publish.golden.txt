@@ -1,0 +1,5 @@
+- cart.legacy: "Texto viejo"
++ cart.note: ""
+~ cart.title: "Añadir %s al carrito" -> "Agregá %s al carrito"
++ cart.total: "Total: 1,234.56 USD"
++ promo.banner: "Ahorrá <b>10%</b> en tu pedido"

@@ -1,0 +1,4 @@
+cart.title: "Agregá %s al carrito"
+cart.note: ""
+promo.banner: "Ahorrá <b>10%</b> en tu pedido"
+cart.total: "Total: 1,234.56 USD"

@@ -3,16 +3,17 @@
 // input segment must come back exactly once, in order, under the requested target
 // language, with its placeholders, markup, glossary names, and numbers preserved.
 //
-// The CLI is added by a later task; this entry point exists so the standalone
-// module builds and tests offline while the package work lands.
+// The program never writes a locale file: -dry-run prints the candidate bundle
+// diff, so publishing stays a human-reviewed change.
 package main
 
 import (
-	"fmt"
+	"context"
 	"os"
+
+	"github.com/GhandyP/validated-mass-translation/internal/cli"
 )
 
 func main() {
-	fmt.Fprintln(os.Stderr, "validated-mass-translation: CLI not implemented yet")
-	os.Exit(2)
+	os.Exit(cli.Run(context.Background(), os.Args[1:], os.Stdin, os.Stdout, os.Stderr, cli.Deps{}))
 }

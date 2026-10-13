@@ -1,0 +1,29 @@
+{
+  "sourceLanguage": "en",
+  "targetLanguage": "es",
+  "segments": [
+    {
+      "id": "cart.title",
+      "text": "Agregá %s al carrito",
+      "status": "draft"
+    },
+    {
+      "id": "cart.note",
+      "text": "",
+      "status": "draft"
+    },
+    {
+      "id": "promo.banner",
+      "text": "Ahorrá <b>10%</b> en tu pedido",
+      "status": "draft"
+    },
+    {
+      "id": "cart.total",
+      "text": "Total: 1,234.56 USD",
+      "status": "draft"
+    }
+  ],
+  "warnings": [
+    "machine translation: every segment is a draft"
+  ]
+}
