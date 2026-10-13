@@ -184,11 +184,11 @@ build-tagged integration test and is never claimed to have run without a key.
 - T1 — [x] Bootstrap the independent repository and module (`S1`, `S9`, `S11`) — inline — provenance `1208743`, bootstrap `1a0f078`.
   Provenance commit of the two original files unchanged, then `git init -b main`, `.gitignore`, MIT `LICENSE`,
   `go.mod`/`go.sum`, stdlib placeholder `main.go`, and this document.
-- T2 — [ ] `internal/batch` input contract + the JSON fixtures (`S2`, `S6`) — worker (parallel with T3) — commit: pending.
+- T2 — [x] `internal/batch` input contract + the JSON fixtures (`S2`, `S6`) — inline — commit `0e25363`.
 - T3 — [ ] `internal/tokens` protected-span scanner and comparison (`S5`, `S6`) — worker (parallel with T2) — commit: pending.
 - T4 — [ ] `internal/translation` contract, R1-R8 rules, draft status and warnings (`S2`, `S4`, `S5`, `S7`, `S8`) — worker — commit: pending.
-- T5 — [ ] `internal/translator`: ADK Gemini seam, output schema, glossary function tool, offline fake (`S3`, `S9`) — worker — commit: pending.
-- T6 — [ ] `internal/locale` + `internal/cli` + golden end-to-end fixtures, dry-run publish gate (`S6`, `S7`) — worker — commit: pending.
+- T5 — [x] `internal/translator`: ADK Gemini seam, output schema, glossary function tool, offline fake (`S3`, `S9`) — inline — commit `d613f7b`.
+- T6 — [x] `internal/locale` + `internal/cli` + golden end-to-end fixtures, dry-run publish gate (`S6`, `S7`) — inline — commit `ae0e7f4`.
 - T7 — [ ] CI workflow + rewritten README with the verification recorded for this checkout (`S1`, `S9`) — worker + parent re-run — commit: pending.
 - T8 — [ ] Independent verification against every `S#`, verdict per spec (`S1`-`S11`) — gentle-ai-verify — no commit.
 - T9 — [ ] Publish the public GitHub repository with `gh` (description, topics, push `main`) (`S10`) — parent.
@@ -230,6 +230,39 @@ build-tagged integration test and is never claimed to have run without a key.
 - L10 — planning decision on verification granularity: the model returns only `{id,text}`, so R1-R8, `status`, both
   languages, and `warnings` are entirely Go-side and must be provable offline with no API key. The only claim that
   requires a key is the opt-in integration test, and it stays skipped without one.
+- L12 — routing fallback, recorded because the mandatory Writer trigger fired and could not run: four dispatches of
+  `gentle-ai-worker` were refused before admission — three with `workspace_root=/home/ghandy` on the message "Writer
+  session Git authority changed before admission", and one with `repository_root` on the same message — because the
+  case directory is now its own Git clone inside the parent clone. No subagent task was created (verified with
+  `subagent_list_tasks`: "No subagent tasks in this session"), and no work was lost. T2-T7 therefore run inline in the
+  parent with the same test-first discipline, which is the documented fallback when a delegation mechanism is
+  unusable. The writer tasks will be attempted again in T8, which is read-only, and the outcome is recorded there.
+- L13 — T2 evidence: RED `internal/batch: no non-test Go files in ...` → `FAIL [build failed]`; GREEN
+  `ok github.com/GhandyP/validated-mass-translation/internal/batch 1.465s` with 24 tests and subtests (48 `RUN`/`PASS`
+  lines); `GOPROXY=off go build ./...` exit 0, `go vet ./internal/batch/` exit 0, `gofmt -l .` printed nothing.
+  Committed as `0e25363` (12 files, 552 insertions). The suite caught its own fixture gap before the commit —
+  `placeholders.json` did not contain `{count}` — which is why the fixture inventory is asserted by
+  `TestFixturesCoverTheRequiredCases` instead of being trusted.
+- L14 — T3 evidence: the RED was a missing package (`internal/tokens: no non-test Go files ... FAIL [build failed]`);
+  GREEN `ok github.com/GhandyP/validated-mass-translation/internal/tokens 1.037s`. Three expectations written before
+  the implementation were wrong and were corrected before the commit: a number drift that produced two extra tokens
+  instead of one, a sorted-line count of four where the multisets produced five, and a misleading test name for a
+  single-letter printf verb. Masking order is part of the contract: printf verbs, ICU expressions, and markup are
+  located and masked first, so digits inside an entity, a tag, an ICU expression, or `%1$s` are not reported as
+  numbers.
+- L15 — T5 and T6 evidence, and the two defects their tests found. T5: `ok .../internal/translator 1.027s`,
+  `go vet` exit 0, `go vet -tags=integration` exit 0, and the tagged run reported `GOOGLE_API_KEY is not set; the live
+  Gemini path is opt-in` before skipping; committed as `d613f7b`, with `go mod tidy` adding the ADK module graph
+  (`go.sum` grew to 93 lines). T6: `ok .../internal/locale 1.024s` and `ok .../internal/cli 1.069s`; committed as
+  `ae0e7f4`. Defect 1 was found by T4's tests in T3's semantics: comparing an ICU expression as an opaque span refused
+  a correct translation of the plural branch text, fixed in `607c3e7` by comparing structure. Defect 2 was mine, in the
+  tooling rather than the product: writing Go files through a JavaScript template literal turned every `\n` inside a Go
+  string into a real newline, which broke three files with `newline in string`; they were rewritten with the escape
+  doubled. Defect 3 was also mine: the hand-written publish golden sorted `cart.total` before `cart.title`, and the CLI
+  produced the correct lexicographic order, so the golden was corrected to the observed output rather than the code to
+  my guess. A fourth wrong expectation was in the CLI test itself: asserting that stdout never contains the substring
+  `warning` is invalid for JSON, because `warnings` is a field of the payload; the test now asserts that no stdout line
+  starts with `warning` and that JSON stdout parses as JSON.
 - L11 — T1 evidence: `git init -b main` created the repository and `git rev-parse --show-toplevel` now returns the
   case directory (S1). Provenance commit `1208743` holds the two original files unchanged (README.md 68 lines,
   main.go 21 lines; sha256 `88bef3da…` and `cb7f4dae…`). Bootstrap commit `1a0f078` holds `.gitignore`, MIT
