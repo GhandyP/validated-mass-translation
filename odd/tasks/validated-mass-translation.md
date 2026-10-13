@@ -195,6 +195,9 @@ build-tagged integration test and is never claimed to have run without a key.
 - T9 — [x] Publish the public GitHub repository with `gh` (description, topics, push `main`) (`S10`) — parent — published as
   `https://github.com/GhandyP/validated-mass-translation` (public, default branch `main`), with local `HEAD` and
   `origin/main` both at `05f2f3e`.
+- T10 — [x] Author the hardening backlog at `docs/improvement-plan.md` from a read-only review of the published tip,
+  with evidence, acceptance criteria, effort, and batches (`S11`) — inline — the same commit also links it from the
+  README and removes the stale badge sentence.
 
 ## Log
 
@@ -307,6 +310,14 @@ build-tagged integration test and is never claimed to have run without a key.
   `git push -u origin main` reported `* [new branch] main -> main` and set up tracking. Verified afterwards:
   `gh repo view --json visibility,defaultBranchRef` returned `PUBLIC` with default branch `main`, and
   `git rev-parse HEAD` == `git rev-parse origin/main` == `05f2f3e43b8da6bdfd0101571527dde686c58a24`.
+- L18 — T10 evidence: a read-only review of the published tip produced `docs/improvement-plan.md`, 28 items across
+  must-fix, should-improve, and optional, each with `path:line` evidence, a counterexample where one exists, the
+  proposed change, the observable acceptance criterion, and an effort estimate, plus six suggested batches and a list
+  of declared non-goals. The review was performed by the same agent that implemented the repository and is labelled in
+  the file as a self-review rather than independent verification. The same commit added a `## Documentation` section to
+  `README.md` pointing at this document and at the backlog, and removed the stale sentence that still described the
+  repository as unpublished. Nothing in the backlog is implemented; by its own rule an accepted item moves into this
+  document as a numbered `S#` and a task before any code changes.
 - L11 — T1 evidence: `git init -b main` created the repository and `git rev-parse --show-toplevel` now returns the
   case directory (S1). Provenance commit `1208743` holds the two original files unchanged (README.md 68 lines,
   main.go 21 lines; sha256 `88bef3da…` and `cb7f4dae…`). Bootstrap commit `1a0f078` holds `.gitignore`, MIT

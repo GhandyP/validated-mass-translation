@@ -4,8 +4,6 @@ A Go command that translates a batch of text segments with a schema-constrained 
 
 [![CI](https://github.com/GhandyP/validated-mass-translation/actions/workflows/ci.yml/badge.svg)](https://github.com/GhandyP/validated-mass-translation/actions/workflows/ci.yml)
 
-The badge becomes live once this repository is published under `GhandyP/validated-mass-translation`.
-
 ## The idea
 
 A structured-output schema guarantees *shape*, not *fidelity*. Asking a model to "keep the placeholders" is a request, not a guarantee: nothing stops `%s` from disappearing, `<b>` from turning into `<i>`, `1,234.56` from becoming `1.234,56`, or a segment from being merged with its neighbour.
@@ -172,6 +170,14 @@ go test -tags=integration ./internal/translator/
 ```
 
 Without a key that test skips, so the offline suite never claims a live model result.
+
+## Documentation
+
+- `odd/tasks/validated-mass-translation.md` — the specification of record: the requirements (S1-S11), the
+  frozen rules (R1-R8), the wire format, the command's contract, and the log of what was verified with which
+  command.
+- `docs/improvement-plan.md` — the reviewed backlog of what to improve next, with evidence, acceptance
+  criteria, effort, and suggested batches. Nothing in it is implemented.
 
 ## License
 
