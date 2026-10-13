@@ -1,0 +1,26 @@
+{
+  "sourceLanguage": "en",
+  "targetLanguage": "es",
+  "segments": [
+    {
+      "id": "printf.string",
+      "text": "Hello %s, you have %d messages"
+    },
+    {
+      "id": "printf.positional",
+      "text": "%1$s sent %1$s a copy"
+    },
+    {
+      "id": "printf.escape",
+      "text": "100%% done"
+    },
+    {
+      "id": "icu.argument",
+      "text": "Hello {name}, you have {count} new messages"
+    },
+    {
+      "id": "icu.plural",
+      "text": "You have {0, plural, one{# item} other{# items}}"
+    }
+  ]
+}

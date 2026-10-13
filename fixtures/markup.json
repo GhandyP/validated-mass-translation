@@ -1,0 +1,18 @@
+{
+  "sourceLanguage": "en",
+  "targetLanguage": "es",
+  "segments": [
+    {
+      "id": "html.bold",
+      "text": "This is <b>important</b> for the team"
+    },
+    {
+      "id": "html.link",
+      "text": "Read <a href=\"https://example.com/docs\">the docs</a> before shipping"
+    },
+    {
+      "id": "html.entity",
+      "text": "Bread &amp; butter, caf&#233; included"
+    }
+  ]
+}

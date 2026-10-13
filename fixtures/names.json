@@ -1,0 +1,15 @@
+{
+  "sourceLanguage": "en",
+  "targetLanguage": "es",
+  "audience": "customer-facing",
+  "segments": [
+    {
+      "id": "name.company",
+      "text": "Acme will review the invoice from Northwind"
+    },
+    {
+      "id": "name.mixed",
+      "text": "Send the Acme report to Northwind before Friday"
+    }
+  ]
+}

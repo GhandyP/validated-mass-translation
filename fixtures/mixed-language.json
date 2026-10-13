@@ -1,0 +1,18 @@
+{
+  "sourceLanguage": "en",
+  "targetLanguage": "fr",
+  "segments": [
+    {
+      "id": "mixed.english",
+      "text": "The report is ready"
+    },
+    {
+      "id": "mixed.spanish",
+      "text": "Hola, ¿cómo estás?"
+    },
+    {
+      "id": "mixed.spanish2",
+      "text": "El informe está listo"
+    }
+  ]
+}

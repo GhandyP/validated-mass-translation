@@ -1,0 +1,10 @@
+{
+  "sourceLanguage": "en",
+  "targetLanguage": "es",
+  "segments": [
+    {
+      "id": "layout.spacer",
+      "text": "   \n  "
+    }
+  ]
+}

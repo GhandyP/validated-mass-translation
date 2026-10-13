@@ -1,0 +1,22 @@
+{
+  "sourceLanguage": "en",
+  "targetLanguage": "es",
+  "segments": [
+    {
+      "id": "cart.title",
+      "text": "Add %s to the cart"
+    },
+    {
+      "id": "cart.note",
+      "text": "   \n  "
+    },
+    {
+      "id": "promo.banner",
+      "text": "Save <b>10%</b> on your order"
+    },
+    {
+      "id": "cart.total",
+      "text": "Total: 1,234.56 USD"
+    }
+  ]
+}

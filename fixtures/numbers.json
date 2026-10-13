@@ -1,0 +1,22 @@
+{
+  "sourceLanguage": "en",
+  "targetLanguage": "es",
+  "segments": [
+    {
+      "id": "number.thousands",
+      "text": "The order total is 1,234.56 USD"
+    },
+    {
+      "id": "number.decimal",
+      "text": "Latency dropped to 3.14 seconds"
+    },
+    {
+      "id": "number.negative",
+      "text": "The balance changed by -7 points"
+    },
+    {
+      "id": "number.integer",
+      "text": "There are 42 pending requests"
+    }
+  ]
+}
