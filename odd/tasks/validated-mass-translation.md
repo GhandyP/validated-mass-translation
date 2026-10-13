@@ -198,6 +198,8 @@ build-tagged integration test and is never claimed to have run without a key.
 - T10 — [x] Author the hardening backlog at `docs/improvement-plan.md` from a read-only review of the published tip,
   with evidence, acceptance criteria, effort, and batches (`S11`) — inline — the same commit also links it from the
   README and removes the stale badge sentence.
+- T11 — [x] Author `docs/remaining-work.md`, the open-items file: the live path that no offline command can close, the
+  order of the code batches, the non-code gaps, and the four decisions that block the order (`S11`) — inline.
 
 ## Log
 
@@ -318,6 +320,16 @@ build-tagged integration test and is never claimed to have run without a key.
   `README.md` pointing at this document and at the backlog, and removed the stale sentence that still described the
   repository as unpublished. Nothing in the backlog is implemented; by its own rule an accepted item moves into this
   document as a numbered `S#` and a task before any code changes.
+- L19 — T11 evidence: `docs/remaining-work.md` was written on 2026-10-13 against `29cfb63`. It is deliberately not a
+  second backlog: it names backlog item IDs and adds only what the backlog does not cover. Three of those additions
+  matter. First, the live model path is the single open claim that no offline command can close, and the file lists the
+  exact commands and the expected result that would close it, including the instruction to keep a failing candidate's
+  raw JSON as a finding. Second, there is no independent verification of this repository: every subagent anchor was
+  refused in this environment because the repository is its own clone nested inside the `/home/ghandy` clone, so
+  "verified" here currently means "verified by its author" and only an outside reader with a fresh clone can change
+  that. Third, four product decisions (language validation, candidate provenance, scale and translation memory, and
+  whether publishing needs an approval artifact) block any coherent ordering of the remaining work. The README index
+  and this task list were updated in the same commit.
 - L11 — T1 evidence: `git init -b main` created the repository and `git rev-parse --show-toplevel` now returns the
   case directory (S1). Provenance commit `1208743` holds the two original files unchanged (README.md 68 lines,
   main.go 21 lines; sha256 `88bef3da…` and `cb7f4dae…`). Bootstrap commit `1a0f078` holds `.gitignore`, MIT

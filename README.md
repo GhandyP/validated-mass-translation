@@ -178,6 +178,8 @@ Without a key that test skips, so the offline suite never claims a live model re
   command.
 - `docs/improvement-plan.md` — the reviewed backlog of what to improve next, with evidence, acceptance
   criteria, effort, and suggested batches. Nothing in it is implemented.
+- `docs/remaining-work.md` — the short list of what is still open: the live path that no offline command can
+  close, the order of the code batches, the gaps that are not code, and the decisions that block the order.
 
 ## License
 
