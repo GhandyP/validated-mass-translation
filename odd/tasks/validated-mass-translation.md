@@ -185,12 +185,13 @@ build-tagged integration test and is never claimed to have run without a key.
   Provenance commit of the two original files unchanged, then `git init -b main`, `.gitignore`, MIT `LICENSE`,
   `go.mod`/`go.sum`, stdlib placeholder `main.go`, and this document.
 - T2 — [x] `internal/batch` input contract + the JSON fixtures (`S2`, `S6`) — inline — commit `0e25363`.
-- T3 — [ ] `internal/tokens` protected-span scanner and comparison (`S5`, `S6`) — worker (parallel with T2) — commit: pending.
-- T4 — [ ] `internal/translation` contract, R1-R8 rules, draft status and warnings (`S2`, `S4`, `S5`, `S7`, `S8`) — worker — commit: pending.
+- T3 — [x] `internal/tokens` protected-span scanner and comparison (`S5`, `S6`) — inline — commit `c8e6819` + fix `607c3e7`.
+- T4 — [x] `internal/translation` contract, R1-R8 rules, draft status and warnings (`S2`, `S4`, `S5`, `S7`, `S8`) — inline — commit `15c535a`.
 - T5 — [x] `internal/translator`: ADK Gemini seam, output schema, glossary function tool, offline fake (`S3`, `S9`) — inline — commit `d613f7b`.
 - T6 — [x] `internal/locale` + `internal/cli` + golden end-to-end fixtures, dry-run publish gate (`S6`, `S7`) — inline — commit `ae0e7f4`.
-- T7 — [ ] CI workflow + rewritten README with the verification recorded for this checkout (`S1`, `S9`) — worker + parent re-run — commit: pending.
-- T8 — [ ] Independent verification against every `S#`, verdict per spec (`S1`-`S11`) — gentle-ai-verify — no commit.
+- T7 — [x] CI workflow + rewritten README with the verification recorded for this checkout (`S1`, `S9`) — inline + parent re-run — commit `9c0db9a`.
+- T8 — [x] Verification against every `S#` (`S1`-`S11`) — **parent-run; an independent agent was unavailable** — no commit of its own; it is recorded here and in L16.
+  Finding: three stale task marks and one stale route column, fixed in the commit that carries L16. S10 stays pending until T9.
 - T9 — [ ] Publish the public GitHub repository with `gh` (description, topics, push `main`) (`S10`) — parent.
 
 ## Log
@@ -263,6 +264,38 @@ build-tagged integration test and is never claimed to have run without a key.
   my guess. A fourth wrong expectation was in the CLI test itself: asserting that stdout never contains the substring
   `warning` is invalid for JSON, because `warnings` is a field of the payload; the test now asserts that no stdout line
   starts with `warning` and that JSON stdout parses as JSON.
+- L16 — T8 verification, and the reason it is a parent-run record rather than an independent one. Five subagent
+  dispatches were refused before admission and created no task: three `gentle-ai-worker` tries answered "Writer session
+  Git authority changed before admission", `gentle-ai-verify` with `workspace_root=/home/ghandy` answered "Select an
+  existing worktree in the same Git clone as this session", and the same verifier with `repository_root` answered
+  "repository_root must select a canonical independent Git repository" — because the case is its own Git clone nested
+  inside the `/home/ghandy` clone. The verdict below is therefore the parent's own work and must not be read as
+  independent.
+  - S1 PASS: `git rev-parse --show-toplevel` prints the case directory; zero `adk-go-enterprise-cookbook` matches in
+    `.go` files; `go.mod` declares `go 1.26.5`, `google.golang.org/adk/v2 v2.2.0`, `google.golang.org/genai v1.66.0`.
+  - S2 PASS: the JSON tags at `internal/batch/batch.go:21-32` and `internal/translation/contract.go:34-65` are exactly the
+    frozen wire format, including `status` on the emitted segment and no status on the candidate.
+  - S3 PASS by reading the code: one agent and one in-memory runner per call, `OutputSchema: Schema()`,
+    `Tools: []tool.Tool{glossary}`, a unique session per call, and `checkShape` enforcing identifier and order identity.
+  - S4, S5, S7, S8 PASS: all thirteen problem codes are named by tests in `internal/translation/build_test.go`, and
+    `placeholder_missing` also by `internal/cli/run_test.go`; the race suite is green across six packages.
+  - S6 PASS: eleven golden comparisons in the CLI test, a fixture-coverage assertion in the batch test, and the golden
+    files are load-bearing — see the negative controls below.
+  - S7 also PASS on the stronger claim: zero `os.WriteFile`, `os.Create`, or `os.OpenFile` calls exist in non-test code,
+    so "this program never writes a locale file" is structural, not incidental.
+  - S9 PASS: `defaultModel = "gemini-flash-latest"` at `internal/translator/gemini.go:25`, the `ADK_MODEL` override read at
+    line 149, and three tests over the resolution order.
+  - Command level, through a binary built into a temporary directory so the exit status is real: `-h` exit 0 with the
+    usage on stdout; a batch with no segments exit 2 with empty stdout; `-target-lang fr` against an `es` batch exit 2; an
+    unknown flag exit 2; `-publish` without `-dry-run` exit 4, naming the human-reviewed diff, creating no file; a valid
+    batch with no key exit 1 printing `model unavailable: GOOGLE_API_KEY is not set`. `-dry-run` through the binary is
+    UNVERIFIABLE without a key because it needs a model call, and is covered in process by the injected fake instead.
+  - Negative controls, to prove the goldens are not decorative: mutating `internal/cli/testdata/segments.golden.json`
+    made the CLI test fail, and mutating `internal/cli/testdata/publish.golden.txt` made it fail as well; restoring both
+    made it pass again, and the worktree was clean afterwards.
+  - Finding, fixed in the commit that carries this entry: the task marks for T3, T4 and T7 still read pending although
+    their commits existed, and T3's route column still described a worker route that never ran.
+  - S10 PENDING: the repository is not published yet; T9 is what proves it.
 - L11 — T1 evidence: `git init -b main` created the repository and `git rev-parse --show-toplevel` now returns the
   case directory (S1). Provenance commit `1208743` holds the two original files unchanged (README.md 68 lines,
   main.go 21 lines; sha256 `88bef3da…` and `cb7f4dae…`). Bootstrap commit `1a0f078` holds `.gitignore`, MIT
