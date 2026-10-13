@@ -216,6 +216,75 @@ func TestDiffIgnoresOrder(t *testing.T) {
 	}
 }
 
+func TestDiffComparesICUExpressionsByStructure(t *testing.T) {
+	tests := []struct {
+		name       string
+		source     string
+		translated string
+		wantLines  int
+	}{
+		{
+			name:       "translated branch text is not a difference",
+			source:     "You have {0, plural, one{# item} other{# items}}",
+			translated: "Tenés {0, plural, one{# ítem} other{# ítems}}",
+			wantLines:  0,
+		},
+		{
+			name:       "reformatted whitespace is not a difference",
+			source:     "You have {0, plural, one{# item} other{# items}}",
+			translated: "Tenés {0,plural,one{# ítem}other{# ítems}}",
+			wantLines:  0,
+		},
+		{
+			name:       "translated select branches are not a difference",
+			source:     "{gender, select, male{He} female{She} other{They}} replied",
+			translated: "{gender, select, male{Él} female{Ella} other{Ellos}} respondió",
+			wantLines:  0,
+		},
+		{
+			name:       "a renamed argument is a difference",
+			source:     "You have {count, plural, one{# item} other{# items}}",
+			translated: "Tenés {total, plural, one{# ítem} other{# ítems}}",
+			wantLines:  2,
+		},
+		{
+			name:       "a dropped option is a difference",
+			source:     "You have {0, plural, one{# item} other{# items}}",
+			translated: "Tenés {0, plural, other{# ítems}}",
+			wantLines:  2,
+		},
+		{
+			name:       "a dropped expression is a difference",
+			source:     "You have {0, plural, one{# item} other{# items}}",
+			translated: "Tenés varios ítems",
+			wantLines:  1,
+		},
+		{
+			name:       "a dropped nested placeholder is a difference",
+			source:     "You have {0, plural, other{{count} items}}",
+			translated: "Tenés {0, plural, other{items}}",
+			wantLines:  2,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			source := tokens.Extract(test.source, nil)
+			translated := tokens.Extract(test.translated, nil)
+
+			got := source.Diff(translated)
+			if len(got) != test.wantLines {
+				t.Fatalf("Diff() = %v, want %d lines", got, test.wantLines)
+			}
+			for _, line := range got {
+				if !strings.HasPrefix(line, "placeholder ") {
+					t.Errorf("Diff() line = %q, want a placeholder line", line)
+				}
+			}
+		})
+	}
+}
+
 func assertEqual(t *testing.T, label string, got, want []string) {
 	t.Helper()
 

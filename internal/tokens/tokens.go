@@ -62,19 +62,20 @@ func (t Tokens) Diff(other Tokens) []string {
 		kind string
 		from []string
 		to   []string
+		key  func(string) string
 	}{
-		{kind: "placeholder", from: t.Placeholders, to: other.Placeholders},
-		{kind: "markup", from: t.Markup, to: other.Markup},
-		{kind: "number", from: t.Numbers, to: other.Numbers},
-		{kind: "name", from: t.Names, to: other.Names},
+		{kind: "placeholder", from: t.Placeholders, to: other.Placeholders, key: placeholderKey},
+		{kind: "markup", from: t.Markup, to: other.Markup, key: identicalKey},
+		{kind: "number", from: t.Numbers, to: other.Numbers, key: identicalKey},
+		{kind: "name", from: t.Names, to: other.Names, key: identicalKey},
 	}
 
 	var lines []string
 	for _, kind := range kinds {
-		for _, value := range multisetDifference(kind.from, kind.to) {
+		for _, value := range multisetDifference(kind.from, kind.to, kind.key) {
 			lines = append(lines, kind.kind+" missing: "+value)
 		}
-		for _, value := range multisetDifference(kind.to, kind.from) {
+		for _, value := range multisetDifference(kind.to, kind.from, kind.key) {
 			lines = append(lines, kind.kind+" extra: "+value)
 		}
 	}
@@ -286,24 +287,90 @@ func extractNames(text string, keep []string) []string {
 }
 
 // multisetDifference returns the entries of from that outnumber to, one entry per
-// surplus occurrence.
-func multisetDifference(from, to []string) []string {
+// surplus occurrence. Values are grouped by key(value), so two differently
+// written values that share a key count as the same value, and the reported
+// entry is the one that was written in from.
+func multisetDifference(from, to []string, key func(string) string) []string {
 	surplus := make(map[string]int, len(from))
+	written := make(map[string]string, len(from))
+
 	for _, value := range from {
-		surplus[value]++
+		grouped := key(value)
+		surplus[grouped]++
+		if _, recorded := written[grouped]; !recorded {
+			written[grouped] = value
+		}
 	}
 	for _, value := range to {
-		surplus[value]--
+		grouped := key(value)
+		surplus[grouped]--
+		if _, recorded := written[grouped]; !recorded {
+			written[grouped] = value
+		}
 	}
 
 	var values []string
-	for value, count := range surplus {
+	for grouped, count := range surplus {
 		for occurrence := 0; occurrence < count; occurrence++ {
-			values = append(values, value)
+			values = append(values, written[grouped])
 		}
 	}
 
 	return values
+}
+
+// identicalKey compares a value exactly as written.
+func identicalKey(value string) string {
+	return value
+}
+
+// placeholderKey compares a placeholder by its structure: an ICU expression by
+// the argument, type, option keys, and nesting it declares, and anything else
+// exactly as written.
+//
+// Comparing an ICU expression as an opaque span would refuse a correct
+// translation, because the branch text of a plural or select is content the
+// translator is meant to translate.
+func placeholderKey(value string) string {
+	if !strings.HasPrefix(value, "{") {
+		return value
+	}
+
+	return icuSignature(value)
+}
+
+// icuSignature strips the branch text from an ICU expression and normalizes
+// whitespace, leaving the part that has to survive translation: the argument
+// name, the type, the option keys, and the braces that describe the nesting.
+//
+// A nested expression contributes its own braces but not its argument name, so
+// this detects a dropped or added nested placeholder without reporting a
+// translated branch as a difference.
+func icuSignature(span string) string {
+	var signature strings.Builder
+
+	depth := 0
+	for index := 0; index < len(span); index++ {
+		character := span[index]
+		switch character {
+		case '{':
+			depth++
+			signature.WriteByte('{')
+		case '}':
+			depth--
+			signature.WriteByte('}')
+		default:
+			if depth == 1 && !isSpace(character) {
+				signature.WriteByte(character)
+			}
+		}
+	}
+
+	return signature.String()
+}
+
+func isSpace(character byte) bool {
+	return character == ' ' || character == '\t' || character == '\n' || character == '\r'
 }
 
 // valuesByStart returns the span values in source order.
