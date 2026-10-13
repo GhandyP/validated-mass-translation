@@ -181,7 +181,7 @@ build-tagged integration test and is never claimed to have run without a key.
 
 ## Tasks
 
-- T1 — [ ] Bootstrap the independent repository and module (`S1`, `S9`, `S11`) — inline — commit: pending.
+- T1 — [x] Bootstrap the independent repository and module (`S1`, `S9`, `S11`) — inline — provenance `1208743`, bootstrap `1a0f078`.
   Provenance commit of the two original files unchanged, then `git init -b main`, `.gitignore`, MIT `LICENSE`,
   `go.mod`/`go.sum`, stdlib placeholder `main.go`, and this document.
 - T2 — [ ] `internal/batch` input contract + the JSON fixtures (`S2`, `S6`) — worker (parallel with T3) — commit: pending.
@@ -230,3 +230,11 @@ build-tagged integration test and is never claimed to have run without a key.
 - L10 — planning decision on verification granularity: the model returns only `{id,text}`, so R1-R8, `status`, both
   languages, and `warnings` are entirely Go-side and must be provable offline with no API key. The only claim that
   requires a key is the opt-in integration test, and it stays skipped without one.
+- L11 — T1 evidence: `git init -b main` created the repository and `git rev-parse --show-toplevel` now returns the
+  case directory (S1). Provenance commit `1208743` holds the two original files unchanged (README.md 68 lines,
+  main.go 21 lines; sha256 `88bef3da…` and `cb7f4dae…`). Bootstrap commit `1a0f078` holds `.gitignore`, MIT
+  `LICENSE`, `go.mod` (module `github.com/GhandyP/validated-mass-translation`, `go 1.26.5`, `adk/v2 v2.2.0`,
+  `genai v1.66.0`), `go.sum` (4 lines), the standard-library placeholder `main.go`, and this document. Re-run by the
+  parent in that directory: `GOPROXY=off go build ./...`, `GOPROXY=off go vet ./...`, and `GOPROXY=off go test ./...`
+  each exited 0, `gofmt -l .` printed nothing, `GOPROXY=off go list -m all` resolved the graph offline, and
+  `go version` reported `go1.26.5 linux/amd64` from the cached toolchain.
