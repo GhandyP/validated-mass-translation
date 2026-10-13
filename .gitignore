@@ -1,0 +1,10 @@
+# Local Pi runtime state (not part of the project)
+.atl/
+
+# Build output
+/dist/
+*.test
+/validated-mass-translation
+
+# Editor and OS noise
+.DS_Store

@@ -1,21 +1,18 @@
+// Command validated-mass-translation translates a batch of text segments with a
+// schema-constrained Google ADK agent and validates the result in pure Go: every
+// input segment must come back exactly once, in order, under the requested target
+// language, with its placeholders, markup, glossary names, and numbers preserved.
+//
+// The CLI is added by a later task; this entry point exists so the standalone
+// module builds and tests offline while the package work lands.
 package main
 
 import (
-	"context"
-	"log"
+	"fmt"
 	"os"
-
-	"github.com/GhandyP/adk-go-enterprise-cookbook/internal/adkhelper"
 )
 
 func main() {
-	if err := adkhelper.Run(
-		context.Background(),
-		os.Args[1:],
-		"case_10_mass_translation",
-		"A text-only starting point for mass translation.",
-		"Translate the supplied text into the requested target language. Preserve placeholders, markup, names, and numbers; flag uncertainty instead of inventing context.",
-	); err != nil {
-		log.Fatal(err)
-	}
+	fmt.Fprintln(os.Stderr, "validated-mass-translation: CLI not implemented yet")
+	os.Exit(2)
 }
