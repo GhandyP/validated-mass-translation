@@ -192,7 +192,9 @@ build-tagged integration test and is never claimed to have run without a key.
 - T7 — [x] CI workflow + rewritten README with the verification recorded for this checkout (`S1`, `S9`) — inline + parent re-run — commit `9c0db9a`.
 - T8 — [x] Verification against every `S#` (`S1`-`S11`) — **parent-run; an independent agent was unavailable** — no commit of its own; it is recorded here and in L16.
   Finding: three stale task marks and one stale route column, fixed in the commit that carries L16. S10 stays pending until T9.
-- T9 — [ ] Publish the public GitHub repository with `gh` (description, topics, push `main`) (`S10`) — parent.
+- T9 — [x] Publish the public GitHub repository with `gh` (description, topics, push `main`) (`S10`) — parent — published as
+  `https://github.com/GhandyP/validated-mass-translation` (public, default branch `main`), with local `HEAD` and
+  `origin/main` both at `05f2f3e`.
 
 ## Log
 
@@ -296,6 +298,15 @@ build-tagged integration test and is never claimed to have run without a key.
   - Finding, fixed in the commit that carries this entry: the task marks for T3, T4 and T7 still read pending although
     their commits existed, and T3's route column still described a worker route that never ran.
   - S10 PENDING: the repository is not published yet; T9 is what proves it.
+- L17 — T9 evidence, publication. Pre-publish review of exactly what would become public: `git ls-files` listed 44 files
+  (code, tests, fixtures, golden files, `LICENSE`, `README.md`, `.github/workflows/ci.yml`, `go.mod`, `go.sum`, and this
+  document), no file above 200 KB, no binary, and the only hit from a credential-shaped pattern was `README.md`'s
+  documented `export GOOGLE_API_KEY="your-key"` placeholder, which is not credential material. Commands: `gh repo create
+  validated-mass-translation --public --description "..."` printed `https://github.com/GhandyP/validated-mass-translation`;
+  `git remote add origin https://github.com/GhandyP/validated-mass-translation.git`;
+  `git push -u origin main` reported `* [new branch] main -> main` and set up tracking. Verified afterwards:
+  `gh repo view --json visibility,defaultBranchRef` returned `PUBLIC` with default branch `main`, and
+  `git rev-parse HEAD` == `git rev-parse origin/main` == `05f2f3e43b8da6bdfd0101571527dde686c58a24`.
 - L11 — T1 evidence: `git init -b main` created the repository and `git rev-parse --show-toplevel` now returns the
   case directory (S1). Provenance commit `1208743` holds the two original files unchanged (README.md 68 lines,
   main.go 21 lines; sha256 `88bef3da…` and `cb7f4dae…`). Bootstrap commit `1a0f078` holds `.gitignore`, MIT
